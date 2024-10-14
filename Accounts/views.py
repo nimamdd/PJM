@@ -6,10 +6,9 @@ from .models import Profile, User
 
 class UserCreate(generics.CreateAPIView):
     """
-    this ....
+    This view creates a user and profile together using nested serializers.
     """
-
-    serializer_class = UserSerializers
+    serializer_class = ProfileSerializers
 
     def perform_create(self, serializer):
         if serializer.is_valid():

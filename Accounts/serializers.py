@@ -25,7 +25,7 @@ class UserSerializers(serializers.ModelSerializer):
 
 
 class ProfileSerializers(serializers.ModelSerializer):
-    user = UserSerializers(read_only=True)
+    user = UserSerializers()
 
     class Meta:
         model = Profile
@@ -35,7 +35,18 @@ class ProfileSerializers(serializers.ModelSerializer):
             'image',
             'phone',
         ]
-    # def create(self, validated_data):
+
+    def create(self, validated_data):
+        # Extract the nested user data
+        user_data = validated_data.pop('user')
+
+        # Create the user
+        user = UserSerializers.create(UserSerializers(), validated_data=user_data)
+
+        # Create the profile linked to the created user
+        profile = Profile.objects.create(user=user, **validated_data)
+
+        return profile
 
 
 class ChangePasswordSerializers(serializers.Serializer):
