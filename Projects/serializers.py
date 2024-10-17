@@ -16,6 +16,7 @@ class ProjectSerializers(serializers.ModelSerializer):
             'end_date',
             'status',
             'budget',
+            'content_id',
 
         )
         extra_kwargs = {
@@ -32,11 +33,12 @@ class TaskSerializer(serializers.ModelSerializer):
             'title',
             'image',
             'color',
-            'descriptions',
+            'description',
             'budget',
             'start_date',
             'end_date',
             'status',
+            'content_id',
         ]
         depth = 1
         extra_kwargs = {
@@ -53,11 +55,12 @@ class SubtaskSerializers(serializers.ModelSerializer):
             'title',
             'image',
             'color',
-            'descriptions',
+            'description',
             'budget',
             'start_date',
             'end_date',
             'status',
+            'content_id',
         ]
         depth = 2
         extra_kwargs = {
