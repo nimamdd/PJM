@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.models import ContentType
+from Financial.models import FinancialRecord
 
 
 class Project(models.Model):
@@ -22,9 +25,15 @@ class Project(models.Model):
     end_date = models.DateField(null=True, blank=True)
     status = models.BooleanField(default=False)
     budget = models.PositiveBigIntegerField(null=True, blank=True)
+    financial_object_type = GenericRelation(FinancialRecord, related_name='project')
 
     def __str__(self):
         return self.title
+
+    @property
+    def content_id(self):
+        c = ContentType.objects.get_for_model(self)
+        return c.id
 
 
 class Task(models.Model):
@@ -47,9 +56,15 @@ class Task(models.Model):
     end_date = models.DateField(null=True, blank=True)
     status = models.BooleanField(default=False)
     budget = models.PositiveBigIntegerField(null=True, blank=True)
+    financial_object_type = GenericRelation(FinancialRecord, related_name='task')
 
     def __str__(self):
         return self.title
+
+    @property
+    def content_id(self):
+        c = ContentType.objects.get_for_model(self)
+        return c.id
 
 
 class SubTask(models.Model):
@@ -72,6 +87,12 @@ class SubTask(models.Model):
     end_date = models.DateField(null=True, blank=True)
     status = models.BooleanField(default=False)
     budget = models.PositiveBigIntegerField(null=True, blank=True)
+    financial_object_type = GenericRelation(FinancialRecord, related_name='subtask')
 
     def __str__(self):
         return self.title
+
+    @property
+    def content_id(self):
+        c = ContentType.objects.get_for_model(self)
+        return c.id
