@@ -41,12 +41,17 @@ urlpatterns = [
     path('accounts/', include('Accounts.urls')),
     path('projects/', include('Projects.urls')),
     path('financial/', include('Financial.urls')),
-    path('api-auth/', include('rest_framework.urls')),
-    path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc')
 
 ]
 
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_URL)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.PRODUCTION is False:
+    urlpatterns += [
+        path('api-auth/', include('rest_framework.urls'), name='rest_auth'),
+        path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+        path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+        path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc')
+
+    ]
