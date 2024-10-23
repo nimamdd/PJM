@@ -36,6 +36,16 @@ class ProfileSerializers(serializers.ModelSerializer):
             'user',
             'image',
             'phone',
+            'project_counter',
+            'project_percentage_done',
+            'task_counter',
+            'task_percentage_done',
+            'subtask_counter',
+            'subtask_percentage_done',
+            'count_all_financial_record',
+            'how_many_paid',
+            'how_many_in_progress',
+            'how_many_canceled',
         ]
 
     def create(self, validated_data):

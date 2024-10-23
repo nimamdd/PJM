@@ -36,6 +36,10 @@ schema_view = get_schema_view(
     permission_classes=[permissions.IsAuthenticated]
 )
 
+admin.site.site_header = 'Project Manager Rest Amoot header'
+admin.site.site_title = 'Project Manager Rest Amoot title'
+admin.site.index_title = 'Welcome Managers'
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('Accounts.urls')),

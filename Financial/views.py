@@ -1,6 +1,7 @@
 from .models import FinancialRecord
 from .serializers import FinancialRecordSerializers
 from rest_framework import generics
+from .filters import ListOfFinancialPerformanceFilterBackend
 
 
 class FinancialListCreateView(generics.ListCreateAPIView):
@@ -8,6 +9,7 @@ class FinancialListCreateView(generics.ListCreateAPIView):
 
     """
     serializer_class = FinancialRecordSerializers
+    filter_backends = [ListOfFinancialPerformanceFilterBackend]
 
     def get_queryset(self):
         user = self.request.user

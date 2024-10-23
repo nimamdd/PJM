@@ -3,11 +3,13 @@ from rest_framework import generics
 from .permissions import permissions, CanUpdateDestroyProject, CanUpdateDestroyTask
 from .serializers import ProjectSerializers, TaskSerializer, SubtaskSerializers
 from django.shortcuts import get_object_or_404
+from .paginations import ProjectTaskSubtaskPagination
 
 
 class ProjectListCreateViews(generics.ListCreateAPIView):
     serializer_class = ProjectSerializers
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = ProjectTaskSubtaskPagination
 
     def get_queryset(self):
         return Project.objects.filter(user=self.request.user)

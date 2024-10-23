@@ -23,3 +23,15 @@ class FinancialRecord(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def kind(self):
+        option = ['project', 'task', 'subtask']
+        content_type = self.content_type
+        if content_type.model == 'project':
+            return option[0]
+        elif content_type.model == 'task':
+            return option[1]
+        elif content_type.model == 'subtask':
+            return option[2]
+        return f'{content_type.model}'

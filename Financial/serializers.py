@@ -36,6 +36,7 @@ class FinancialRecordSerializers(serializers.ModelSerializer):
             'content_type',
             'object_id',
             'content_object',
+            'kind',
         ]
         extra_kwargs = {
             'who_created': {'read_only': True}
