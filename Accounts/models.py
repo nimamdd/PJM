@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 from django.utils import timezone
+import uuid
 
 
 class ProfileManager(BaseUserManager):
@@ -29,8 +30,8 @@ class ProfileManager(BaseUserManager):
 
 
 class Profile(AbstractBaseUser):
-    username = models.CharField(max_length=150, unique=True,default=f'Default_user_{id}')
-    email = models.CharField(max_length=100, unique=True, default=f'Default_email_{id}')
+    username = models.CharField(max_length=150, unique=True)
+    email = models.CharField(max_length=100, unique=True)
     image = models.ImageField(upload_to='accounts/profile/', default='accounts/profile/default/default_avatar.jpg')
 
     is_active = models.BooleanField(default=True)
@@ -55,3 +56,14 @@ class Profile(AbstractBaseUser):
 
     def __str__(self):
         return self.username
+
+
+class Team(models.Model):
+
+    id = models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
+    name = models.CharField(max_length=150)
+    owner = models.OneToOneField(Profile,on_delete=models.CASCADE, related_name='owner_team')
+    # owner = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    admin = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='admin_team')
+    members = models.ManyToManyField(Profile, related_name='members_team')
+
