@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from Financial.models import FinancialRecord
+from django.conf import settings
 
 
 class Project(models.Model):
@@ -16,7 +17,7 @@ class Project(models.Model):
         ('yellow', 'yellow'),
     )
     title = models.CharField(max_length=256)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     description = models.TextField()
     color = models.CharField(max_length=6, choices=COLOR_CHOICES)
     image = models.ImageField(upload_to='projects/project/',
