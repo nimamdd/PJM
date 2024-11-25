@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
 
 
 class FinancialRecord(models.Model):
@@ -10,7 +11,7 @@ class FinancialRecord(models.Model):
         ('in progress', 'in progress'),
         ('canceled', 'canceled'),
     )
-    who_created = models.ForeignKey(User, on_delete=models.CASCADE)
+    who_created = models.ForeignKey( settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=256)
     price = models.FloatField()
     description = models.TextField()
