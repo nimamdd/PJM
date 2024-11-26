@@ -8,7 +8,7 @@ class ProjectSerializers(serializers.ModelSerializer):
         fields = (
             'pk',
             'title',
-            'user',
+            'owner',
             'description',
             'color',
             'image',
@@ -39,6 +39,7 @@ class TaskSerializer(serializers.ModelSerializer):
             'end_date',
             'status',
             'content_id',
+            'admins'
         ]
         depth = 1
         extra_kwargs = {
@@ -61,6 +62,7 @@ class SubtaskSerializers(serializers.ModelSerializer):
             'end_date',
             'status',
             'content_id',
+            'members',
         ]
         depth = 2
         extra_kwargs = {
