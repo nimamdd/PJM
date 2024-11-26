@@ -15,7 +15,7 @@ class CanUpdateDestroyProject(permissions.BasePermission):
         project = get_object_or_404(Project, id=project_id)
 
         try:
-            if user == project.user:
+            if user == project.owner:
                 return True
         except user.DoesNotExist or project.DoesNotExist:
             pass
@@ -36,7 +36,7 @@ class CanUpdateDestroyTask(permissions.BasePermission):
 
         try:
 
-            if user == project.user:
+            if user == project.owner:
                 return True
         except user.DoesNotExist or project.DoseNotExist:
             pass

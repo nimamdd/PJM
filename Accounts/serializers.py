@@ -4,15 +4,19 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.exceptions import ValidationError
+from django.contrib.auth import authenticate
 
 
 class ProfileSerializers(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+
     class Meta:
         model = Profile
         fields = [
             'username',
             'email',
             'image',
+            'password',
             'project_counter',
             'project_percentage_done',
             'task_counter',
@@ -62,6 +66,25 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         profile.set_password(self.validated_data['new_password'])
         profile.save()
         return profile
+
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+
+        user = authenticate(email=email, password=password)
+        if user is None:
+            raise serializers.ValidationError("Invalid credentials")
+
+        refresh = RefreshToken.for_user(user)
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
 
 
 class UserLogoutSerializer(serializers.Serializer):
