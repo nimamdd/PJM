@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
+from rest_framework.exceptions import ValidationError
+
 from Financial.models import FinancialRecord
 from django.conf import settings
 
@@ -100,3 +102,5 @@ class SubTask(models.Model):
     def content_id(self):
         c = ContentType.objects.get_for_model(self)
         return c.id
+
+

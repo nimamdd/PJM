@@ -36,6 +36,7 @@ class Profile(AbstractBaseUser):
     email = models.EmailField(max_length=100, unique=True)
     image = models.ImageField(upload_to='accounts/profile/', default='accounts/profile/default/default_avatar.jpg')
     is_active = models.BooleanField(default=True)
+    is_premium = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
@@ -119,6 +120,7 @@ class Profile(AbstractBaseUser):
         for f in all_financial:
             count += f.price
         return count
+
 
 
 class Team(models.Model):

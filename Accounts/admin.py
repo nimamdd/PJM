@@ -5,7 +5,7 @@ import admin_thumbnails
 
 @admin_thumbnails.thumbnail('image')
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email', 'image_thumbnail')
+    list_display = ('username', 'email', 'image_thumbnail','project_counter')
     list_filter = ('username', 'email')
     search_fields = ('username', 'email')
     list_per_page = 10
@@ -13,7 +13,8 @@ class ProfileAdmin(admin.ModelAdmin):
         ('username', 'image_thumbnail', 'image'),
         ('password'),
         ('email'),
-        ('is_active', 'is_staff', 'is_superuser'),
+        ('is_active', 'is_premium', 'is_staff', 'is_superuser'),
+
         ('teams'),
     )
 

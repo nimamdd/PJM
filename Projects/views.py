@@ -4,7 +4,8 @@ from .permissions import permissions, CanUpdateDestroyProject, CanUpdateDestroyT
 from .serializers import ProjectSerializers, TaskSerializer, SubtaskSerializers
 from django.shortcuts import get_object_or_404
 from .paginations import ProjectTaskSubtaskPagination
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ValidationError
+
 
 
 class ProjectListCreateViews(generics.ListCreateAPIView):
@@ -16,6 +17,8 @@ class ProjectListCreateViews(generics.ListCreateAPIView):
         return Project.objects.filter(owner=self.request.user)
 
     def perform_create(self, serializer):
+        if not self.request.user.owner.is_premium and self.request.user.owner.project_counter > 5:
+            raise ValidationError('You must be premium user for creating more than 5 Project')
         if serializer.is_valid():
             serializer.save(owner=self.request.user)
 
