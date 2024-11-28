@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
+from rest_framework.exceptions import ValidationError
+
 from Financial.models import FinancialRecord
 from django.conf import settings
 
@@ -17,7 +19,8 @@ class Project(models.Model):
         ('yellow', 'yellow'),
     )
     title = models.CharField(max_length=256)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    owner = models.ForeignKey('Accounts.Profile', related_name='project_owner', on_delete=models.CASCADE,)
+    teams = models.ManyToManyField('Accounts.Team', related_name='project_teams')
     description = models.TextField()
     color = models.CharField(max_length=6, choices=COLOR_CHOICES)
     image = models.ImageField(upload_to='projects/project/',
@@ -48,6 +51,7 @@ class Task(models.Model):
         ('yellow', 'yellow'),
     )
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    admins = models.ManyToManyField('Accounts.Profile', related_name='task_admins')
     title = models.CharField(max_length=256)
     description = models.TextField()
     color = models.CharField(max_length=6, choices=COLOR_CHOICES)
@@ -79,6 +83,7 @@ class SubTask(models.Model):
         ('yellow', 'yellow'),
     )
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    members = models.ManyToManyField('Accounts.Profile',related_name='subtask_members')
     title = models.CharField(max_length=256)
     description = models.TextField()
     color = models.CharField(max_length=6, choices=COLOR_CHOICES)
@@ -97,3 +102,5 @@ class SubTask(models.Model):
     def content_id(self):
         c = ContentType.objects.get_for_model(self)
         return c.id
+
+
