@@ -14,6 +14,7 @@ class ProfileAdmin(admin.ModelAdmin):
         ('password'),
         ('email'),
         ('is_active', 'is_premium', 'is_staff', 'is_superuser'),
+
         ('teams'),
     )
 

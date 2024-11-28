@@ -8,3 +8,4 @@ media/accounts/profile/*.jpeg
 __pycache__*/__pycache__/*
 static
 .env
+*.pyc
