@@ -32,6 +32,8 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 ADMIN_SITE_HEADER = 'POJIO rest'
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,6 +48,14 @@ INSTALLED_APPS = [
     'Financial',
 ]
 
+ASGI_APPLICATION="ProjectManagerRest.asgi.application"
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': "channels.layers.InMemoryChannelLayer"
+    }
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -57,6 +67,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'ProjectManagerRest.urls'
+
+
 
 TEMPLATES = [
     {
