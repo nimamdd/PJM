@@ -40,7 +40,7 @@ class Profile(AbstractBaseUser):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
-    teams = models.ManyToManyField('Team',null=True, blank=True, related_name='profile_teams')
+    team = models.ManyToManyField('Team',null=True, blank=True, related_name='profile_team')
     objects = ProfileManager()
 
     USERNAME_FIELD = 'username'
@@ -131,7 +131,7 @@ class Team(models.Model):
 
     id = models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
     name = models.CharField(max_length=150)
-    image = models.ImageField(upload_to='accounts/teams/', default='accounts/teams/default/defalt_avatar.png')
+    image = models.ImageField(upload_to='accounts/team/', default='accounts/team/default/defalt_avatar.png')
     descriptions = models.TextField(default='', blank=True)
     owner = models.ForeignKey(Profile,on_delete=models.CASCADE, related_name='owner_team')
     admin = models.ManyToManyField(Profile,  related_name='admin_team', blank=True)

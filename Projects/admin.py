@@ -12,7 +12,7 @@ class ProjectAdmin(admin.ModelAdmin):
     list_per_page = 10
     fields = (
         ('title','image_thumbnail','image'),
-        ('owner', 'teams'),
+        ('owner', 'team'),
         ('description', 'status','color'),
         ('start_date','end_date'),
         ('budget'),

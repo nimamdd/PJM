@@ -20,7 +20,7 @@ class Project(models.Model):
     )
     title = models.CharField(max_length=256)
     owner = models.ForeignKey('Accounts.Profile', related_name='project_owner', on_delete=models.CASCADE,)
-    teams = models.ManyToManyField('Accounts.Team', related_name='project_teams')
+    team = models.ManyToManyField('Accounts.Team', related_name='project_team')
     description = models.TextField()
     color = models.CharField(max_length=6, choices=COLOR_CHOICES)
     image = models.ImageField(upload_to='projects/project/',
