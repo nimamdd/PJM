@@ -17,7 +17,7 @@ class ProjectListCreateViews(generics.ListCreateAPIView):
         return Project.objects.filter(owner=self.request.user)
 
     def perform_create(self, serializer):
-        if not self.request.user.owner.is_premium and self.request.user.owner.project_counter > 5:
+        if not self.request.user.is_premium and self.request.user.total_cases > 5:
             raise ValidationError('You must be premium user for creating more than 5 Project')
         if serializer.is_valid():
             serializer.save(owner=self.request.user)
@@ -32,23 +32,24 @@ class ProjectListUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Project.objects.filter(owner=self.request.user)
 
-    # def perform_update(self, serializer):
-    #     if serializer.is_valid():
-    #         serializer.save()
+    def perform_update(self, serializer):
+        if serializer.is_valid():
+            serializer.save()
 
-    # def perform_destroy(self, instance):
-    #     instance.delete()
+    def perform_destroy(self, instance):
+        instance.delete()
 
 
 class TaskProjectListCreate(generics.ListCreateAPIView):
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = ProjectTaskSubtaskPagination
-    #lookup_field = 'pk'
+
 
     def get_queryset(self):
         project_id = self.kwargs['pk']
         project = get_object_or_404(Project, id=project_id)
+
 
         if project.owner != self.request.user:
             raise PermissionDenied("You don't have permission to view tasks of this project")
@@ -57,6 +58,12 @@ class TaskProjectListCreate(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         project_id = self.kwargs['pk']
         project = get_object_or_404(Project, id=project_id)
+
+        admins = serializer.validated_data.get('admins')
+        print(admins)
+
+        if not self.request.user.is_premium and self.request.user.total_cases > 5:
+            raise ValidationError('You must be premium user for creating more than 5 Project')
 
         if project.owner != self.request.user:
             raise PermissionDenied("Only the owner can add tasks to this project")
@@ -78,8 +85,8 @@ class TaskListUpdateDeleteViews(generics.RetrieveUpdateDestroyAPIView):
             serializer.validated_data['iamge']=task.image
         serializer.save()
 
-    # def perform_destroy(self, instance):
-    #     instance.delete()
+    def perform_destroy(self, instance):
+        instance.delete()
 
 
 class SubtaskListCreate(generics.ListCreateAPIView):
@@ -91,6 +98,9 @@ class SubtaskListCreate(generics.ListCreateAPIView):
     def get_queryset(self):
         task_id = self.kwargs['pk']
         task = get_object_or_404(Task, id=task_id)
+        # if not self.request.user.is_premium and self.request.user.total_cases > 5:
+        #     raise ValidationError('You must be premium user for creating more than 5 Project')
+
         if task.project.owner != self.request.user:
             raise PermissionDenied("You don't have permission to view subtasks of this task.")
         return SubTask.objects.filter(task=task)

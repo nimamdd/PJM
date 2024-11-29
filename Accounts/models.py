@@ -67,7 +67,7 @@ class Profile(AbstractBaseUser):
     def project_percentage_done(self):
         if self.project_counter == 0:
             return 0
-        done_projects = Project.objects.filter(user=self, status=True).count()
+        done_projects = Project.objects.filter(owner=self, status=True).count()
         return (done_projects / self.project_counter) * 100
 
     @property
@@ -91,6 +91,10 @@ class Profile(AbstractBaseUser):
             return 0
         done_subtask = SubTask.objects.filter(task__project__owner=self, status=True).count()
         return (done_subtask / self.subtask_counter) * 100
+
+    @property
+    def total_cases(self):
+        return self.project_counter + self.task_counter + self.subtask_counter
 
     @property
     def count_all_financial_record(self):

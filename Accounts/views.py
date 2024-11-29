@@ -15,23 +15,25 @@ from .models import Profile
 
 class ProfileCreate(generics.CreateAPIView):
     """
-    This view creates a profile.
+    This view is used to create Profile
     """
     serializer_class = ProfileSerializers
+    permission_classes = [permissions.IsAuthenticated, ]
+    lookup_field = 'id'
 
-    def perform_create(self, serializer):
+    def perform_update(self, serializer):
         serializer.save()
 
 
 class ProfileDetail(generics.RetrieveAPIView):
     """
-    get profile details
+    Get profile Details
     """
     serializer_class = ProfileSerializers
-    permission_classes = [permissions.IsAuthenticated, ]
-
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'id'
     def get_queryset(self):
-        return Profile.objects.filter(id=self.request.user.id)
+        return Profile.objects.all()
 
 
 class ChangePasswordProfile(generics.UpdateAPIView):

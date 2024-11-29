@@ -37,9 +37,9 @@ class TaskSerializer(serializers.ModelSerializer):
             'budget',
             'start_date',
             'end_date',
+            'admins',
             'status',
             'content_id',
-            'admins'
         ]
         depth = 1
         extra_kwargs = {
