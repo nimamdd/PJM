@@ -9,8 +9,9 @@ from rest_framework import generics, permissions, status, views
 from rest_framework.response import Response
 from .serializers import (ProfileSerializers, ChangePasswordSerializers,
                           PasswordResetRequestSerializer, PasswordResetConfirmSerializer,
-                          LoginSerializer,UserLogoutSerializer)
-from .models import Profile
+                          LoginSerializer,UserLogoutSerializer,
+                          TeamSerializer)
+from .models import Profile, Team
 
 
 class ProfileCreate(generics.CreateAPIView):
@@ -144,3 +145,22 @@ class UserLogoutView(views.APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response("Logout successful", status=status.HTTP_200_OK)
+
+
+class TeamCreate(generics.CreateAPIView):
+    """
+    This view is used to create Teaam
+    """
+    serializer_class = TeamSerializer
+    permission_classes = [permissions.IsAuthenticated,]
+    lookup_field = 'id'
+    def get_queryset(self):
+        return Team.objects.all()
+
+
+class TeamDetailUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = TeamSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'id'
+    def get_queryset(self):
+        return Team.objects.all()

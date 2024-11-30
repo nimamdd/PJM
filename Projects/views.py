@@ -1,6 +1,6 @@
 from .models import Project, Task, SubTask
 from rest_framework import generics
-from .permissions import permissions, CanUpdateDestroyProject, CanUpdateDestroyTask
+from .permissions import permissions, CanUpdateDestroyProject, CanUpdateDestroyTask, CanUpdateDestroySubtask
 from .serializers import ProjectSerializers, TaskSerializer, SubtaskSerializers
 from django.shortcuts import get_object_or_404
 from .paginations import ProjectTaskSubtaskPagination
@@ -50,7 +50,6 @@ class TaskProjectListCreate(generics.ListCreateAPIView):
         project_id = self.kwargs['pk']
         project = get_object_or_404(Project, id=project_id)
 
-
         if project.owner != self.request.user:
             raise PermissionDenied("You don't have permission to view tasks of this project")
         return Task.objects.filter(project=project)
@@ -59,14 +58,27 @@ class TaskProjectListCreate(generics.ListCreateAPIView):
         project_id = self.kwargs['pk']
         project = get_object_or_404(Project, id=project_id)
 
-        admins = serializer.validated_data.get('admins')
-        print(admins)
-
-        if not self.request.user.is_premium and self.request.user.total_cases > 5:
-            raise ValidationError('You must be premium user for creating more than 5 Project')
+        if not self.request.user.is_premium and self.request.user.task_counter > 5:
+            raise ValidationError('You must be premium user for creating more than 5 Tasks')
 
         if project.owner != self.request.user:
             raise PermissionDenied("Only the owner can add tasks to this project")
+        serializer.save(project=project)
+
+        # get admins and teams of project
+        team = project.team.first()  # if only one team
+        if not team:
+            raise ValidationError("This project does not have an associated team")
+
+        team_admins = team.admin.all()
+
+        # get admins from validated date
+        admins = serializer.validated_data.get('admins', [])
+
+        # check if all task admins are team admins
+        for admin in admins:
+            if admin not in team_admins:
+                raise ValidationError(f'{admin} is not an admin of the project\'s team')
         serializer.save(project=project)
 
 
@@ -98,8 +110,8 @@ class SubtaskListCreate(generics.ListCreateAPIView):
     def get_queryset(self):
         task_id = self.kwargs['pk']
         task = get_object_or_404(Task, id=task_id)
-        # if not self.request.user.is_premium and self.request.user.total_cases > 5:
-        #     raise ValidationError('You must be premium user for creating more than 5 Project')
+        if not self.request.user.is_premium and self.request.user.subtask_counter > 5:
+            raise ValidationError('You must be premium user for creating more than 5 Subtasks')
 
         if task.project.owner != self.request.user:
             raise PermissionDenied("You don't have permission to view subtasks of this task.")
@@ -113,4 +125,22 @@ class SubtaskListCreate(generics.ListCreateAPIView):
             raise PermissionDenied("Only the owner can add subtasks to this task.")
 
         serializer.save(task=task)
+
+
+class SubtaskListUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = SubtaskSerializers
+    permission_classes = [permissions.IsAuthenticated , CanUpdateDestroySubtask]
+    lookup_field = 'pk'
+
+    def get_queryset(self):
+        return SubTask.objects.filter(project__owner=self.request.user,)
+    def perform_update(self, serializer):
+        subtask = self.get_object()
+        if not serializer.validated_data.get('image',None):
+            serializer.validated_data['image']= subtask.image
+        serializer.save()
+
+    def perform_delete(self, instance):
+        instance.delete()
+
 
