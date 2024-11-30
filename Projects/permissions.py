@@ -1,6 +1,6 @@
 from rest_framework import permissions
 from django.contrib.auth.models import User
-from .models import Project, Task
+from .models import Project, Task, SubTask
 from django.shortcuts import get_object_or_404
 
 
@@ -42,3 +42,22 @@ class CanUpdateDestroyTask(permissions.BasePermission):
             pass
 
         return False
+
+
+class CanUpdateDestroySubtask(permissions.BasePermission):
+    """
+    Custom permission to check if the user can Update or Destroy
+    """
+    def has_permission(self, request, view):
+        user = request.user
+        subtask_id = view.kwargs.get('pk')
+        subtask = get_object_or_404(SubTask, id=subtask_id)
+
+        if subtask:
+            project = Project.objects.get(id=subtask.project.id )
+
+        try:
+            if user == project.owner :
+                return True
+        except user.DoesNotExist or Project.DoesNotExist:
+            return False

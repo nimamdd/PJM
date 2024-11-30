@@ -7,3 +7,4 @@ class ProjectsConfig(AppConfig):
 
     def ready(self):
         from .signals import after_saving_project_create_template
+

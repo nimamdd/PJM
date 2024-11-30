@@ -20,7 +20,7 @@ class Project(models.Model):
     )
     title = models.CharField(max_length=256)
     owner = models.ForeignKey('Accounts.Profile', related_name='project_owner', on_delete=models.CASCADE,)
-    teams = models.ManyToManyField('Accounts.Team', related_name='project_teams')
+    team = models.ManyToManyField('Accounts.Team', related_name='project_team')
     description = models.TextField()
     color = models.CharField(max_length=6, choices=COLOR_CHOICES)
     image = models.ImageField(upload_to='projects/project/',
@@ -63,6 +63,10 @@ class Task(models.Model):
     budget = models.PositiveBigIntegerField(null=True, blank=True)
     financial_object_type = GenericRelation(FinancialRecord, related_name='task')
 
+    @property
+    def team(self):
+        return self.objects.team.all()
+
     def __str__(self):
         return self.title
 
@@ -82,6 +86,7 @@ class SubTask(models.Model):
         ('pink', 'pink'),
         ('yellow', 'yellow'),
     )
+    project = models.ForeignKey(Project, on_delete=models.CASCADE , null=True)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     members = models.ManyToManyField('Accounts.Profile',related_name='subtask_members')
     title = models.CharField(max_length=256)
@@ -102,5 +107,9 @@ class SubTask(models.Model):
     def content_id(self):
         c = ContentType.objects.get_for_model(self)
         return c.id
+
+    def team(self):
+        team = self.project.team
+        return team
 
 

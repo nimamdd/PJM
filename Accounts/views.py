@@ -9,29 +9,32 @@ from rest_framework import generics, permissions, status, views
 from rest_framework.response import Response
 from .serializers import (ProfileSerializers, ChangePasswordSerializers,
                           PasswordResetRequestSerializer, PasswordResetConfirmSerializer,
-                          LoginSerializer,UserLogoutSerializer)
-from .models import Profile
+                          LoginSerializer,UserLogoutSerializer,
+                          TeamSerializer)
+from .models import Profile, Team
 
 
 class ProfileCreate(generics.CreateAPIView):
     """
-    This view creates a profile.
+    This view is used to create Profile
     """
     serializer_class = ProfileSerializers
+    permission_classes = [permissions.IsAuthenticated, ]
+    lookup_field = 'id'
 
-    def perform_create(self, serializer):
+    def perform_update(self, serializer):
         serializer.save()
 
 
 class ProfileDetail(generics.RetrieveAPIView):
     """
-    get profile details
+    Get profile Details
     """
     serializer_class = ProfileSerializers
-    permission_classes = [permissions.IsAuthenticated, ]
-
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'id'
     def get_queryset(self):
-        return Profile.objects.filter(id=self.request.user.id)
+        return Profile.objects.all()
 
 
 class ChangePasswordProfile(generics.UpdateAPIView):
@@ -142,3 +145,22 @@ class UserLogoutView(views.APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response("Logout successful", status=status.HTTP_200_OK)
+
+
+class TeamCreate(generics.CreateAPIView):
+    """
+    This view is used to create Teaam
+    """
+    serializer_class = TeamSerializer
+    permission_classes = [permissions.IsAuthenticated,]
+    lookup_field = 'id'
+    def get_queryset(self):
+        return Team.objects.all()
+
+
+class TeamDetailUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = TeamSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'id'
+    def get_queryset(self):
+        return Team.objects.all()

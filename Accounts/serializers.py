@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Profile
+from .models import Profile, Team
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -100,3 +100,10 @@ class UserLogoutSerializer(serializers.Serializer):
             refresh_token.blacklist()
         except Exception as e:
             raise ValidationError("Invalid token or token already blacklisted")
+
+
+class TeamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Team
+        fields = ('name','image','descriptions','owner','admin','members')
+
