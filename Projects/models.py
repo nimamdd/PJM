@@ -113,3 +113,11 @@ class SubTask(models.Model):
         return team
 
 
+
+class Message(models.Model):
+    room = models.ForeignKey('Accounts.Profile', on_delete=models.CASCADE,related_name='messages')
+    user = models.ForeignKey('Accounts.Team', on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
