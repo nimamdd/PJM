@@ -53,12 +53,28 @@ class ChangePasswordSerializers(serializers.Serializer):
 
 
 class PasswordResetRequestSerializer(serializers.Serializer):
-    email = serializers.EmailField(required=True)
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        if not Profile.objects.filter(email=value).exists():
+            raise serializers.ValidationError("No account found with this email.")
+        return value
 
 
 class PasswordResetConfirmSerializer(serializers.Serializer):
-    new_password = serializers.CharField(write_only=True, validators=[validate_password], required=True)
-    confirm_password = serializers.CharField(write_only=True, required=True)
+    new_password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        if attrs['new_password'] != attrs['confirm_password']:
+            raise serializers.ValidationError({'confirm_password': "New password and confirm password fields didn't match."})
+        return attrs
+
+    def save(self, profile):
+        new_password = self.validated_data['new_password']
+        profile.set_password(new_password)
+        profile.save()
+        return profile
 
     def validate(self, attrs):
         if attrs['new_password'] != attrs['confirm_password']:

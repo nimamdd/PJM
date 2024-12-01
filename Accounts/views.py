@@ -1,4 +1,4 @@
-from audioop import reverse
+from django.urls import reverse
 
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -89,16 +89,19 @@ class PasswordResetRequestView(generics.GenericAPIView):
         profile = Profile.objects.filter(email=email).first()
         if profile:
             token = default_token_generator.make_token(profile)
-            uid = urlsafe_base64_encode(force_bytes(profile.pk))
+            uid = urlsafe_base64_encode(force_bytes(str(profile.pk)))
             reset_url = request.build_absolute_uri(
-                reverse('accounts:password-rest-confirm', kwargs={'uidb64': uid, 'token': token})
+            reverse('accounts:password-rest-confirm', kwargs={'uidb64': uid, 'token': token})
             )
             send_mail('Password Reset Request',
                       f'Click the link below to reset your password: {reset_url}',
                       'from@example.com',
                       [email],
-                      fail_silently=False, )
-        return Response({'detail': 'Password reset link has been sent'}, status=status.HTTP_200_OK)
+                      fail_silently=False
+            )
+            return Response({'detail': 'Password reset link has been sent'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'detail': 'No user found with this email address'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class PasswordResetConfirmView(generics.GenericAPIView):
