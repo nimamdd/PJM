@@ -4,7 +4,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.exceptions import ValidationError
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 
 
 class ProfileSerializers(serializers.ModelSerializer):
@@ -30,7 +30,10 @@ class ProfileSerializers(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
+        password = validated_data.pop('password')
         profile = Profile.objects.create(**validated_data)
+        profile.set_password(password)
+        profile.save()
         return profile
 
 
@@ -76,9 +79,13 @@ class LoginSerializer(serializers.Serializer):
         email = attrs.get('email')
         password = attrs.get('password')
 
-        user = authenticate(email=email, password=password)
-        if user is None:
-            raise serializers.ValidationError("Invalid credentials")
+        try:
+            user = get_user_model().objects.get(email=email)
+        except get_user_model().DoesNotExist:
+            raise ValidationError("Invalid credentials,  User Model")
+
+        if not user.check_password(password):
+            raise ValidationError("Invalid credentials,   Password")
 
         refresh = RefreshToken.for_user(user)
         return {
@@ -86,6 +93,12 @@ class LoginSerializer(serializers.Serializer):
             'access': str(refresh.access_token),
         }
 
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        profile = Profile.objects.create(**validated_data)
+        profile.set_password(password)
+        profile.save()
+        return profile
 
 class UserLogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField(required=True)
@@ -103,6 +116,8 @@ class UserLogoutSerializer(serializers.Serializer):
 
 
 class TeamSerializer(serializers.ModelSerializer):
+    members = serializers.SlugRelatedField(slug_field='username', queryset=Profile.objects.all(), many=True)
+
     class Meta:
         model = Team
         fields = ('name','image','descriptions','owner','admin','members')

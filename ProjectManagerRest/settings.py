@@ -22,9 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')
-PRODUCTION = config("PRODUCTION", default=False, cast=bool)
+PRODUCTION = False
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = True
 # ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(','
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
@@ -43,9 +43,12 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'rest_framework.authtoken',
     'Accounts',
     'Projects',
     'Financial',
+    # 'debug_toolbar',
+
 ]
 
 ASGI_APPLICATION="ProjectManagerRest.asgi.application"
@@ -57,6 +60,7 @@ CHANNEL_LAYERS = {
 }
 
 MIDDLEWARE = [
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -97,6 +101,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
 if PRODUCTION:
     DATABASES = {
          'default': {
@@ -176,6 +181,7 @@ if PRODUCTION is False:
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+    'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
 }
 
@@ -214,4 +220,10 @@ CORS_ALLOW_HEADERS = (
 
 
 AUTH_USER_MODEL = 'Accounts.Profile'
+
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+    'localhost',
+]
 

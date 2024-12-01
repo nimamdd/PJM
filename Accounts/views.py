@@ -7,6 +7,8 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from jwt.utils import force_bytes
 from rest_framework import generics, permissions, status, views
 from rest_framework.response import Response
+from django.contrib.auth import authenticate
+from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import (ProfileSerializers, ChangePasswordSerializers,
                           PasswordResetRequestSerializer, PasswordResetConfirmSerializer,
                           LoginSerializer,UserLogoutSerializer,
@@ -127,11 +129,11 @@ class UserLoginView(views.APIView):
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data)
+        serializer = LoginSerializer(data=request.data)
+
         if serializer.is_valid():
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class UserLogoutView(views.APIView):
@@ -157,8 +159,20 @@ class TeamCreate(generics.CreateAPIView):
     def get_queryset(self):
         return Team.objects.all()
 
+    
+class TeamDetail(generics.RetrieveAPIView):
+    """
+    Retrieve the details of a specific team.
+    """
+    serializer_class = TeamSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'id'
 
-class TeamDetailUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    def get_queryset(self):
+        return Team.objects.all()
+
+
+class TeamlUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TeamSerializer
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'id'
