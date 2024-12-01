@@ -40,7 +40,7 @@ class Profile(AbstractBaseUser):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
-    team = models.ManyToManyField('Team',null=True, blank=True, related_name='profile_team')
+    team = models.ManyToManyField('Team', blank=True, related_name='profile_team')
     objects = ProfileManager()
 
     USERNAME_FIELD = 'username'
@@ -136,7 +136,7 @@ class Team(models.Model):
     owner = models.ForeignKey(Profile,on_delete=models.CASCADE, related_name='owner_team')
     admin = models.ManyToManyField(Profile,  related_name='admin_team', blank=True)
     members = models.ManyToManyField(Profile, related_name='members_team')
-    projects = models.ManyToManyField('Projects.Task', related_name='team_projects',null=True, blank=True)
+    projects = models.ManyToManyField('Projects.Task', related_name='team_projects', blank=True)
 
     def __str__(self):
         return self.name

@@ -22,6 +22,7 @@ class ProjectSerializers(serializers.ModelSerializer):
             'budget',
             'content_id',
 
+
         )
         extra_kwargs = {
             'user': {'read_only': True},
@@ -55,7 +56,7 @@ class TaskSerializer(serializers.ModelSerializer):
         }
 
     def validate_admins(self, value):
-        team = self.initial_data.get('team')  # دریافت تیم از داده‌های اولیه
+        team = self.initial_data.get('team')
         if team:
             team_instance = Team.objects.get(id=team)
             team_admins = team_instance.admin.all()
@@ -66,10 +67,10 @@ class TaskSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        # تیم از validated_data گرفته می‌شود
+
         team_data = validated_data.get('team')
-        task = Task.objects.create(**validated_data)  # تسک ایجاد می‌شود
-        # برای ManyToMany نیازی به set() نیست، چون این فیلد به صورت خودکار ذخیره می‌شود.
+        task = Task.objects.create(**validated_data)
+
         return task
 
 
@@ -79,9 +80,9 @@ class SubtaskSerializers(serializers.ModelSerializer):
     class Meta:
         model = SubTask
         fields = [
+            'title',
             'pk',
             'task',
-            'title',
             'image',
             'color',
             'description',
