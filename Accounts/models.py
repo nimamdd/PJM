@@ -43,8 +43,8 @@ class Profile(AbstractBaseUser):
     team = models.ManyToManyField('Team', blank=True, related_name='profile_team')
     objects = ProfileManager()
 
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email', 'password']
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'password']
 
     def has_perm(self, perm, obj=None):
         """"""
